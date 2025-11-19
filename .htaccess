@@ -1,0 +1,23 @@
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin "http://localhost:3000"
+    Header always set Access-Control-Allow-Methods "GET,POST,PUT,DELETE,OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+    Header always set Access-Control-Allow-Credentials "true"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Respond to preflight OPTIONS with 200 without further processing
+    RewriteCond %{REQUEST_METHOD} =OPTIONS
+    RewriteRule ^ - [R=200,L]
+</IfModule>
+
+# Fallback: for older Apache versions without mod_rewrite available we can use FilesMatch
+<IfModule !mod_rewrite.c>
+    <FilesMatch ".*">
+        SetEnvIf Request_Method OPTIONS IS_OPTIONS
+        Header always set Access-Control-Allow-Origin "http://localhost:3000" env=IS_OPTIONS
+        Header always set Access-Control-Allow-Methods "GET,POST,PUT,DELETE,OPTIONS" env=IS_OPTIONS
+        Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, Origin" env=IS_OPTIONS
+    </FilesMatch>
+</IfModule>
